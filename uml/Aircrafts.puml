@@ -1,0 +1,132 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+abstract class AbstractFlyingObject {
+  # int locationX
+  # int locationY
+  # int speedX
+  # int speedY
+  # BufferedImage image
+  # int width
+  # int height
+  # boolean isValid
+  + void forward()
+  + boolean crash(AbstractFlyingObject)
+  + void vanish()
+}
+
+abstract class AbstractAircraft {
+  # int maxHp;
+  # int hp;
+  + void decreaseHp(int)
+  + {abstract} List<BaseBullet> shoot()
+}
+
+abstract class EnemyBase {
+  # ItemBase genLoot()
+}
+
+AbstractAircraft --|> AbstractFlyingObject
+
+class HeroAircraft {
+  - int shootNum
+  - int power
+  - int direction
+  + void forward()
+  + List<BaseBullet> shoot()
+}
+
+abstract class BaseBullet
+{
+    - power:int
+    + BaseBullet(int locationX, int locationY, int speedX, int speedY, int power)
+    + forward():void
+	+ getPower():int
+}
+
+class HeroBullet {
+    + HeroBullet(int locationX, int locationY,
+     int speedX, int speedY, int power)
+}
+
+
+class EnemyBullet {
+    + EnemyBullet(int locationX, int locationY,
+     int speedX, int speedY, int power)
+}
+
+BaseBullet <|-- HeroBullet
+BaseBullet <|-- EnemyBullet
+BaseBullet --|> AbstractFlyingObject
+
+HeroAircraft --|> AbstractAircraft
+
+class CommonEnemy {
+  + void forward()
+  + List<BaseBullet> shoot()
+}
+
+class EliteEnemy {
+  + void forward()
+  + List<BaseBullet> shoot()
+}
+
+EnemyBase --|> AbstractAircraft
+
+CommonEnemy --|> EnemyBase
+EliteEnemy --|> EnemyBase
+
+abstract class ItemBase {
+  + void use(HeroAircraft)
+}
+
+class HealItem {
+  + int healAmount
+}
+class HealItemFactory{
+  + HealItemFactory(int healAmount)
+  + HealItem genItem(int locationX, int locationY, int speedX, int speedY)
+}
+class BulletItem{}
+class BulletItemFactory{
+  + BulletItem genItem(int locationX, int locationY, int speedX, int speedY)
+}
+class BombItem{}
+class BombItemFactory{
+  + BombItem genItem(int locationX, int locationY, int speedX, int speedY)
+}
+interface ItemFactoryInterface{
+  + ItemBase genItem(int locationX, int locationY, int speedX, int speedY)
+}
+class ChanceItemFactory{
+  - ItemFactoryInterface innerFactory
+  - double chance
+  - Random rand
+  + ChanceItemFactory(double chance, ItemFactoryInterface itemFactory)
+  + ItemBase genItem(int locationX, int locationY, int speedX, int speedY)
+}
+
+ItemFactoryInterface <-- ItemBase
+
+ItemBase <|-- HealItem
+ItemBase <|-- BombItem
+ItemBase <|-- BulletItem
+ItemFactoryInterface <|.. ChanceItemFactory
+ItemFactoryInterface <|.. HealItemFactory
+ItemFactoryInterface <|.. BombItemFactory
+ItemFactoryInterface <|.. BulletItemFactory
+
+interface EnemyLoot {
+  + ItemBase genLoot(Enemy)
+}
+EnemyBase *--> EnemyLoot
+class ChanceLootTable {
+  - Iterable<ItemFactoryInterface> items
+  + ItemBase genLoot(Enemy)
+}
+
+EnemyLoot <|.. ChanceLootTable
+
+ChanceLootTable o--> ItemFactoryInterface
+
+@enduml
