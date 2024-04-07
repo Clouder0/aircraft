@@ -10,8 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class EliteEnemy extends EnemyBase {
-    public EliteEnemy(int locationX, int locationY, int speedX, int speedY, int hp) {
-        super(locationX, locationY, speedX, speedY, hp);
+    public EliteEnemy(int locationX, int locationY, int speedX, int speedY) {
+        super(locationX, locationY, speedX, speedY, 60);
         List<ItemFactoryInterface> loots = new ArrayList<ItemFactoryInterface>();
         loots.add(new ChanceItemFactory(0.5, new HealItemFactory(10)));
         loots.add(new ChanceItemFactory(0.5, new BulletItemFactory()));

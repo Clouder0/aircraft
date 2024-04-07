@@ -16,8 +16,8 @@ import java.util.List;
  */
 public class CommonEnemy extends EnemyBase {
 
-    public CommonEnemy(int locationX, int locationY, int speedX, int speedY, int hp) {
-        super(locationX, locationY, speedX, speedY, hp);
+    public CommonEnemy(int locationX, int locationY, int speedX, int speedY) {
+        super(locationX, locationY, speedX, speedY, 30);
     }
 
     @Override

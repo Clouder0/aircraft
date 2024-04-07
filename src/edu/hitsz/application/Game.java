@@ -39,6 +39,8 @@ public class Game extends JPanel {
 
     private final List<ItemBase> items;
 
+    private final List<EnemyFactoryInterface> enemyFactories;
+
     /**
      * 屏幕中出现的敌机最大数量
      */
@@ -66,12 +68,16 @@ public class Game extends JPanel {
     private boolean gameOverFlag = false;
 
     public Game() {
-        heroAircraft = new HeroAircraft(Main.WINDOW_WIDTH / 2, Main.WINDOW_HEIGHT - ImageManager.HERO_IMAGE.getHeight(), 0, 0, 100);
+        heroAircraft = HeroSingleton.getInstance();
 
         enemyAircrafts = new LinkedList<>();
         heroBullets = new LinkedList<>();
         enemyBullets = new LinkedList<>();
         items = new ArrayList<>();
+
+        enemyFactories = new ArrayList<>();
+        enemyFactories.add(new RandomEnemyFactory(1.8, (new RandomLocationEnemyFactory<>(CommonEnemy.class))));
+        enemyFactories.add(new RandomEnemyFactory(0.2, (new RandomLocationEnemyFactory<>(EliteEnemy.class))));
 
         /**
          * Scheduled 线程池，用于定时任务调度
@@ -99,13 +105,10 @@ public class Game extends JPanel {
             // 周期性执行（控制频率）
             if (timeCountAndNewCycleJudge()) {
                 System.out.println(time);
-                // 新敌机产生
-                if (enemyAircrafts.size() < enemyMaxNumber) {
-                    if(Math.random() < 0.2) {
-                        enemyAircrafts.add(new EliteEnemy((int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())), (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05), 0, 10, 30));
-                    } else {
-                        enemyAircrafts.add(new CommonEnemy((int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())), (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05), 0, 10, 30));
-                    }
+                for(EnemyFactoryInterface factory : this.enemyFactories) {
+                    if(enemyAircrafts.size() >= enemyMaxNumber) break;
+                    EnemyBase enemy = factory.genEnemy();
+                    if(enemy != null) this.enemyAircrafts.add(enemy);
                 }
                 // 飞机射出子弹
                 shootAction();

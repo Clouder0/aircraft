@@ -5,7 +5,7 @@ import edu.hitsz.item.ItemBase;
 public abstract class EnemyBase extends AbstractAircraft {
     protected EnemyLoot genLoot;
 
-    public EnemyBase(int locationX, int locationY, int speedX, int speedY, int hp) {
+    protected EnemyBase(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY, hp);
     }
 
