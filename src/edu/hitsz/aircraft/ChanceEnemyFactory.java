@@ -1,9 +1,9 @@
 package edu.hitsz.aircraft;
 
-public class RandomEnemyFactory  implements EnemyFactoryInterface{
+public class ChanceEnemyFactory implements EnemyFactoryInterface {
     private final double chance;
     private final EnemyFactoryInterface innerFactory;
-    public RandomEnemyFactory(double chance, EnemyFactoryInterface innerFactory) {
+    public ChanceEnemyFactory(double chance, EnemyFactoryInterface innerFactory) {
         this.chance = chance;
         this.innerFactory = innerFactory;
     }

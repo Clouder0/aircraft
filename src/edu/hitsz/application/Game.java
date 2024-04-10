@@ -76,8 +76,8 @@ public class Game extends JPanel {
         items = new ArrayList<>();
 
         enemyFactories = new ArrayList<>();
-        enemyFactories.add(new RandomEnemyFactory(1.8, (new RandomLocationEnemyFactory<>(CommonEnemy.class))));
-        enemyFactories.add(new RandomEnemyFactory(0.2, (new RandomLocationEnemyFactory<>(EliteEnemy.class))));
+        enemyFactories.add(new ChanceEnemyFactory(1.8, (new RandomLocationEnemyFactory<>(new CommonEnemyLocationFactory()))));
+        enemyFactories.add(new ChanceEnemyFactory(0.2, (new RandomLocationEnemyFactory<>(new EliteEnemyLocationFactory()))));
 
         /**
          * Scheduled 线程池，用于定时任务调度
@@ -234,9 +234,10 @@ public class Game extends JPanel {
                     }
                 }
                 // 英雄机 与 敌机 相撞，均损毁
+                // 不，英雄机扣 HP 100
                 if (enemyAircraft.crash(heroAircraft) || heroAircraft.crash(enemyAircraft)) {
                     enemyAircraft.vanish();
-                    heroAircraft.decreaseHp(Integer.MAX_VALUE);
+                    heroAircraft.decreaseHp(100);
                 }
             }
         }

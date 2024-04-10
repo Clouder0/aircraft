@@ -1,6 +1,7 @@
 package edu.hitsz.item;
 
 import edu.hitsz.aircraft.HeroAircraft;
+import edu.hitsz.aircraft.HeroSingleton;
 import edu.hitsz.item.ItemBase;
 
 public class HealItem extends ItemBase {

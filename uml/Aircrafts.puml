@@ -1,6 +1,12 @@
 @startuml
 'https://plantuml.com/class-diagram
 
+class HeroAircraftSingleton {
+  + {static} HeroAircraft getInstance();
+}
+
+HeroAircraftSingleton --> HeroAircraft
+
 abstract class AbstractFlyingObject {
   # int locationX
   # int locationY
@@ -124,6 +130,42 @@ class ChanceLootTable {
   - Iterable<ItemFactoryInterface> items
   + ItemBase genLoot(Enemy)
 }
+
+interface LocationEnemyFactoryInterface {
+  + EnemyBase genEnemy(int locationX, int locationY, int speedX, int speedY);
+}
+
+interface EnemyFactoryInterface {
+  + EnemyBase genEnemy();
+}
+
+class CommonEnemyLocationFactory {
+  + CommonEnemy genEnemy(int locationX, int locationY, int speedX, int speedY);
+}
+
+class EliteEnemyLocationFactory{
+  + EliteEnemy genEnemy(int locationX, int locationY, int speedX, int speedY);
+}
+
+class RandomLocationEnemyFactory {
+  + RandomLocationEnemyFactory(LocationEnemyFactoryInterface inner);
+  + EnemyBase genEnemy();
+}
+
+class ChanceEnemyFactory {
+  + ChanceEnemyFactory(EnemyFactoryInterface inner, double chance);
+  + EnemyBase genEnemy();
+}
+
+EnemyFactoryInterface <|.. ChanceEnemyFactory
+EnemyFactoryInterface <|.. RandomLocationEnemyFactory
+LocationEnemyFactoryInterface <|.. CommonEnemyLocationFactory
+LocationEnemyFactoryInterface <|.. EliteEnemyLocationFactory
+RandomLocationEnemyFactory o--> CommonEnemyLocationFactory
+RandomLocationEnemyFactory o--> EliteEnemyLocationFactory
+ChanceEnemyFactory o--> RandomLocationEnemyFactory
+CommonEnemyLocationFactory ..> CommonEnemy
+EliteEnemyLocationFactory ..> EliteEnemy
 
 EnemyLoot <|.. ChanceLootTable
 

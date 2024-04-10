@@ -18,10 +18,9 @@ public class HeroAircraft extends AbstractAircraft {
      * @param locationY 英雄机位置y坐标
      * @param speedX    英雄机射出的子弹的基准速度（英雄机无特定速度）
      * @param speedY    英雄机射出的子弹的基准速度（英雄机无特定速度）
-     * @param hp        初始生命值
      */
-    public HeroAircraft(int locationX, int locationY, int speedX, int speedY, int hp) {
-        super(locationX, locationY, speedX, speedY, hp);
+    public HeroAircraft(int locationX, int locationY, int speedX, int speedY) {
+        super(locationX, locationY, speedX, speedY, 1000);
     }
 
     @Override
