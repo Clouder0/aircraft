@@ -29,11 +29,12 @@ public class EliteEnemy extends EnemyBase {
 
     @Override
     public List<BaseBullet> shoot() {
+        if(Math.random() < 0.3) return null;
         // TODO: shoot for elite
-        List<BaseBullet> res = new LinkedList<>();
+        List<BaseBullet> res = new ArrayList<>();
         int x = this.getLocationX();
         final int power = 30;
-        final int direction = 1;  // -1 向下，1 向上
+        final int direction = 1;  // 1 向下，-1 向上
         final int shootNum = 1;
         int y = this.getLocationY() + direction * 2;
         int speedX = 0;

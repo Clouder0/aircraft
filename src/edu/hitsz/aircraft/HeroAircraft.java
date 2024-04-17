@@ -20,7 +20,7 @@ public class HeroAircraft extends AbstractAircraft {
      * @param speedY    英雄机射出的子弹的基准速度（英雄机无特定速度）
      */
     public HeroAircraft(int locationX, int locationY, int speedX, int speedY) {
-        super(locationX, locationY, speedX, speedY, 1000);
+        super(locationX, locationY, speedX, speedY, 100000);
     }
 
     @Override

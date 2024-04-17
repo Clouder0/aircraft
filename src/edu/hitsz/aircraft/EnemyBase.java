@@ -2,6 +2,8 @@ package edu.hitsz.aircraft;
 
 import edu.hitsz.item.ItemBase;
 
+import java.util.List;
+
 public abstract class EnemyBase extends AbstractAircraft {
     protected EnemyLoot genLoot;
 
@@ -9,7 +11,7 @@ public abstract class EnemyBase extends AbstractAircraft {
         super(locationX, locationY, speedX, speedY, hp);
     }
 
-    public ItemBase genLoot() {
+    public List<ItemBase> genLoot() {
         if (this.genLoot != null) return this.genLoot.genLoot(this);
         return null;
     }

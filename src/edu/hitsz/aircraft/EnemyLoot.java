@@ -2,6 +2,8 @@ package edu.hitsz.aircraft;
 
 import edu.hitsz.item.ItemBase;
 
+import java.util.List;
+
 public interface EnemyLoot {
-    public ItemBase genLoot(EnemyBase enemy);
+    List<ItemBase> genLoot(EnemyBase enemy);
 }

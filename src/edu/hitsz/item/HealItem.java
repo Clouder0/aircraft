@@ -7,7 +7,7 @@ import edu.hitsz.item.ItemBase;
 public class HealItem extends ItemBase {
     public final int healAmount;
 
-    protected HealItem(int locationX, int locationY, int speedX, int speedY, int healAmount) {
+    public HealItem(int locationX, int locationY, int speedX, int speedY, int healAmount) {
         super(locationX,locationY,speedX,speedY);
         this.healAmount = healAmount;
     }

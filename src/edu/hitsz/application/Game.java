@@ -1,6 +1,7 @@
 package edu.hitsz.application;
 
 import edu.hitsz.aircraft.*;
+import edu.hitsz.basic.Wrapper;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
 import edu.hitsz.item.ItemBase;
@@ -49,7 +50,7 @@ public class Game extends JPanel {
     /**
      * 当前得分
      */
-    private int score = 0;
+    private Wrapper<Integer> score = new Wrapper<>(0);
     /**
      * 当前时刻
      */
@@ -76,8 +77,11 @@ public class Game extends JPanel {
         items = new ArrayList<>();
 
         enemyFactories = new ArrayList<>();
-        enemyFactories.add(new ChanceEnemyFactory(1.8, (new RandomLocationEnemyFactory<>(new CommonEnemyLocationFactory()))));
-        enemyFactories.add(new ChanceEnemyFactory(0.2, (new RandomLocationEnemyFactory<>(new EliteEnemyLocationFactory()))));
+        enemyFactories.add(new ChanceEnemyFactory(0.8, (new RandomLocationEnemyFactory<>(new CommonEnemyLocationFactory()))));
+        enemyFactories.add(new ChanceEnemyFactory(0.4, (new RandomLocationEnemyFactory<>(new EliteEnemyLocationFactory()))));
+        enemyFactories.add(new ChanceEnemyFactory(0.2, (new RandomLocationEnemyFactory<>(new ElitePlusEnemyLocationFactory()))));
+        enemyFactories.add(new BossFactory(this.score));
+
 
         /**
          * Scheduled 线程池，用于定时任务调度
@@ -164,7 +168,10 @@ public class Game extends JPanel {
 
     private void shootAction() {
         for (EnemyBase enemy : enemyAircrafts) {
-            enemyBullets.addAll(enemy.shoot());
+            List<BaseBullet> bullets = enemy.shoot();
+            if(bullets != null) {
+                enemyBullets.addAll(bullets);
+            }
         }
 
         // 英雄射击
@@ -225,17 +232,17 @@ public class Game extends JPanel {
                     enemyAircraft.decreaseHp(bullet.getPower());
                     bullet.vanish();
                     if (enemyAircraft.notValid()) {
-                        ItemBase loot = enemyAircraft.genLoot();
+                        List<ItemBase> loot = enemyAircraft.genLoot();
                         if(loot != null) {
-                            System.out.println("loot!");
-                            items.add(loot);
+                            items.addAll(loot);
                         }
-                        score += 10;
+                        score.set(score.get() + 10);
                     }
                 }
                 // 英雄机 与 敌机 相撞，均损毁
                 // 不，英雄机扣 HP 100
                 if (enemyAircraft.crash(heroAircraft) || heroAircraft.crash(enemyAircraft)) {
+                    enemyAircraft.decreaseHp(10000);
                     enemyAircraft.vanish();
                     heroAircraft.decreaseHp(100);
                 }
@@ -304,7 +311,7 @@ public class Game extends JPanel {
     }
 
     private void paintImageWithPositionRevised(Graphics g, List<? extends AbstractFlyingObject> objects) {
-        if (objects.size() == 0) {
+        if (objects.isEmpty()) {
             return;
         }
 
@@ -320,7 +327,7 @@ public class Game extends JPanel {
         int y = 25;
         g.setColor(new Color(16711680));
         g.setFont(new Font("SansSerif", Font.BOLD, 22));
-        g.drawString("SCORE:" + this.score, x, y);
+        g.drawString("SCORE:" + this.score.get(), x, y);
         y = y + 20;
         g.drawString("LIFE:" + this.heroAircraft.getHp(), x, y);
     }
