@@ -1,4 +1,4 @@
-package edu.hitsz.aircraft;
+package edu.hitsz.aircraft.enemy;
 
 import edu.hitsz.item.ItemBase;
 

@@ -1,8 +1,10 @@
-package edu.hitsz.aircraft;
+package edu.hitsz.aircraft.enemy;
 
+import edu.hitsz.aircraft.shootstrategy.SectorShootStrategy;
 import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.bullet.EnemyBullet;
+import edu.hitsz.bullet.EnemyBulletFactory;
 import edu.hitsz.item.*;
 
 import java.util.ArrayList;
@@ -12,11 +14,12 @@ public class ElitePlusEnemy extends EnemyBase {
 
     private int direction_duration = 0;
     public ElitePlusEnemy(int locationX, int locationY, int speedX, int speedY) {
-        super(locationX,locationY,speedX,speedY,90);
+        super(locationX,locationY,speedX,speedY,90, new SectorShootStrategy(new EnemyBulletFactory(), 1));
         List<ItemFactoryInterface> loots = new ArrayList<>();
         loots.add(new ChanceItemFactory(0.8, new HealItemFactory(10)));
         loots.add(new ChanceItemFactory(0.8, new BulletItemFactory()));
         loots.add(new ChanceItemFactory(0.8, new BombItemFactory()));
+        loots.add(new ChanceItemFactory(0.8, new BulletPlusItemFactory()));
         this.genLoot = new ChanceLootTable(loots);
     }
 
@@ -41,11 +44,6 @@ public class ElitePlusEnemy extends EnemyBase {
     @Override
     public List<BaseBullet> shoot() {
         if(Math.random() < 0.3) return null;
-        // 发射扇形子弹
-        List<BaseBullet> res = new ArrayList<>();
-        res.add(new EnemyBullet(this.locationX - 10, this.locationY, this.speedX - 2, this.speedY + 3, 30));
-        res.add(new EnemyBullet(this.locationX, this.locationY, this.speedX, this.speedY + 3, 30));
-        res.add(new EnemyBullet(this.locationX + 10, this.locationY, this.speedX + 2, this.speedY + 3, 30));
-        return res;
+        return super.shoot();
     }
 }

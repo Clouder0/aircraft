@@ -1,6 +1,11 @@
 package edu.hitsz.application;
 
 import edu.hitsz.aircraft.*;
+import edu.hitsz.aircraft.enemy.*;
+import edu.hitsz.aircraft.enemy.factory.*;
+import edu.hitsz.application.score.FileScoreStore;
+import edu.hitsz.application.score.ScoreManager;
+import edu.hitsz.application.score.ScoreRecord;
 import edu.hitsz.basic.Wrapper;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
@@ -10,6 +15,8 @@ import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
@@ -67,6 +74,7 @@ public class Game extends JPanel {
      * 游戏结束标志
      */
     private boolean gameOverFlag = false;
+    private final ScoreManager scoreManager;
 
     public Game() {
         heroAircraft = HeroSingleton.getInstance();
@@ -75,6 +83,8 @@ public class Game extends JPanel {
         heroBullets = new LinkedList<>();
         enemyBullets = new LinkedList<>();
         items = new ArrayList<>();
+        scoreManager = new ScoreManager();
+        scoreManager.addStore(new FileScoreStore(Path.of("score.txt")));
 
         enemyFactories = new ArrayList<>();
         enemyFactories.add(new ChanceEnemyFactory(0.8, (new RandomLocationEnemyFactory<>(new CommonEnemyLocationFactory()))));
@@ -109,14 +119,16 @@ public class Game extends JPanel {
             // 周期性执行（控制频率）
             if (timeCountAndNewCycleJudge()) {
                 System.out.println(time);
-                for(EnemyFactoryInterface factory : this.enemyFactories) {
-                    if(enemyAircrafts.size() >= enemyMaxNumber) break;
+                for (EnemyFactoryInterface factory : this.enemyFactories) {
+                    if (enemyAircrafts.size() >= enemyMaxNumber) break;
                     EnemyBase enemy = factory.genEnemy();
-                    if(enemy != null) this.enemyAircrafts.add(enemy);
+                    if (enemy != null) this.enemyAircrafts.add(enemy);
                 }
                 // 飞机射出子弹
                 shootAction();
             }
+
+            TimerManager.nextTick();
 
             // 子弹移动
             bulletsMoveAction();
@@ -139,6 +151,7 @@ public class Game extends JPanel {
                 executorService.shutdown();
                 gameOverFlag = true;
                 System.out.println("Game Over!");
+                this.gameOver();
             }
 
         };
@@ -169,7 +182,7 @@ public class Game extends JPanel {
     private void shootAction() {
         for (EnemyBase enemy : enemyAircrafts) {
             List<BaseBullet> bullets = enemy.shoot();
-            if(bullets != null) {
+            if (bullets != null) {
                 enemyBullets.addAll(bullets);
             }
         }
@@ -233,7 +246,7 @@ public class Game extends JPanel {
                     bullet.vanish();
                     if (enemyAircraft.notValid()) {
                         List<ItemBase> loot = enemyAircraft.genLoot();
-                        if(loot != null) {
+                        if (loot != null) {
                             items.addAll(loot);
                         }
                         score.set(score.get() + 10);
@@ -302,8 +315,8 @@ public class Game extends JPanel {
         paintImageWithPositionRevised(g, heroBullets);
 
         paintImageWithPositionRevised(g, enemyAircrafts);
-
-        g.drawImage(ImageManager.HERO_IMAGE, heroAircraft.getLocationX() - ImageManager.HERO_IMAGE.getWidth() / 2, heroAircraft.getLocationY() - ImageManager.HERO_IMAGE.getHeight() / 2, null);
+        var hero_image = ImageManager.CLASSNAME_IMAGE_MAP.get(HeroAircraft.class.getName());
+        g.drawImage(hero_image, heroAircraft.getLocationX() - hero_image.getWidth() / 2, heroAircraft.getLocationY() - hero_image.getHeight() / 2, null);
 
         //绘制得分和生命值
         paintScoreAndLife(g);
@@ -332,5 +345,11 @@ public class Game extends JPanel {
         g.drawString("LIFE:" + this.heroAircraft.getHp(), x, y);
     }
 
-
+    private void gameOver() {
+        System.out.println("game over logic");
+        ScoreRecord now = new ScoreRecord("tester", LocalDateTime.now(), this.score.get());
+        this.scoreManager.writeScore(now);
+        String s = this.scoreManager.getScores().stream().map((x) -> x.name + " " + x.score + " " + x.time).reduce("", (pre, x) -> pre + x + '\n');
+        System.out.println(s);
+    }
 }

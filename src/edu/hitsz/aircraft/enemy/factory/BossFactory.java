@@ -1,9 +1,11 @@
-package edu.hitsz.aircraft;
+package edu.hitsz.aircraft.enemy.factory;
 
+import edu.hitsz.aircraft.enemy.BossEnemy;
+import edu.hitsz.aircraft.enemy.EnemyBase;
 import edu.hitsz.application.Main;
 import edu.hitsz.basic.Wrapper;
 
-public class BossFactory implements EnemyFactoryInterface{
+public class BossFactory implements EnemyFactoryInterface {
     private final Wrapper<Integer> score;
     private BossEnemy now_boss;
 
@@ -15,7 +17,7 @@ public class BossFactory implements EnemyFactoryInterface{
     public EnemyBase genEnemy() {
         System.out.println(score);
         if(score.get() < 100) return null;
-        if(this.now_boss != null && this.now_boss.hp > 0) return null; // only generate when boss dies
+        if(this.now_boss != null && this.now_boss.getHp() > 0) return null; // only generate when boss dies
         this.cooldown += 1;
         System.out.println(this.cooldown);
         if(this.cooldown < 3)

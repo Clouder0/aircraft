@@ -1,9 +1,13 @@
 package edu.hitsz.aircraft;
 
-import edu.hitsz.bullet.BaseBullet;
-import edu.hitsz.bullet.HeroBullet;
+import edu.hitsz.aircraft.shootstrategy.ShootStrategyInterface;
+import edu.hitsz.aircraft.shootstrategy.SingleShootStrategy;
+import edu.hitsz.application.TimerManager;
+import edu.hitsz.bullet.HeroBulletFactory;
+import edu.hitsz.utils.TickTimer;
+import edu.hitsz.utils.TickTimerFactory;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,7 +24,13 @@ public class HeroAircraft extends AbstractAircraft {
      * @param speedY    英雄机射出的子弹的基准速度（英雄机无特定速度）
      */
     public HeroAircraft(int locationX, int locationY, int speedX, int speedY) {
-        super(locationX, locationY, speedX, speedY, 100000);
+        super(locationX, locationY, speedX, speedY, 200, new SingleShootStrategy(new HeroBulletFactory(), -1));
+        this.shoot_queue = new ArrayList<>();
+        // add default shoot
+        ShootStrategyInterface default_shoot = this.shoot_strategy;
+        this.shoot_queue.add(TickTimerFactory.setAlways(() -> {
+            this.setShootStrategy(default_shoot);
+        }));
     }
 
     @Override
@@ -28,38 +38,29 @@ public class HeroAircraft extends AbstractAircraft {
         // 英雄机由鼠标控制，不通过forward函数移动
     }
 
-    /**
-     * 通过射击产生子弹
-     *
-     * @return 射击出的子弹List
-     */
-    @Override
-    public List<BaseBullet> shoot() {
-        List<BaseBullet> res = new LinkedList<>();
-        int x = this.getLocationX();
-        /*
-         * 子弹射击方向 (向上发射：1，向下发射：-1)
-         */
-        int direction = -1;
-        int y = this.getLocationY() + direction * 2;
-        int speedX = 0;
-        int speedY = this.getSpeedY() + direction * 5;
-        BaseBullet bullet;
-        /*
-         * 子弹一次发射数量
-         */
-        int shootNum = 1;
-        for (int i = 0; i < shootNum; i++) {
-            // 子弹发射位置相对飞机位置向前偏移
-            // 多个子弹横向分散
-            /*
-             * 子弹伤害
-             */
-            int power = 30;
-            bullet = new HeroBullet(x + (i * 2 - shootNum + 1) * 10, y, speedX, speedY, power);
-            res.add(bullet);
-        }
-        return res;
+    protected List<TickTimer> shoot_queue;
+
+    public void enhanceShoot(int duration, ShootStrategyInterface s) {
+        // pause old top
+        TickTimer last = this.shoot_queue.getLast();
+        TickTimer now = TickTimerFactory.setLasting(duration, () -> {
+            last.pause();
+            System.out.println("pre_start");
+            this.setShootStrategy(s);
+        }, () -> {
+            last.resume();
+            System.out.println("after_finished");
+            this.shoot_queue.removeLast();
+        }, () -> {
+            System.out.println("pre_resume");
+            this.setShootStrategy(s);
+        }, null);
+        this.shoot_queue.add(now);
+        TimerManager.addTimer(now);
+        now.start();
     }
 
+    public void setShootStrategy(ShootStrategyInterface s) {
+        this.shoot_strategy = s;
+    }
 }

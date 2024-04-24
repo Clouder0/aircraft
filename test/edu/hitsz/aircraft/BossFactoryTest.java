@@ -1,5 +1,7 @@
 package edu.hitsz.aircraft;
 
+import edu.hitsz.aircraft.enemy.BossEnemy;
+import edu.hitsz.aircraft.enemy.factory.BossFactory;
 import edu.hitsz.basic.Wrapper;
 import org.junit.jupiter.api.Test;
 

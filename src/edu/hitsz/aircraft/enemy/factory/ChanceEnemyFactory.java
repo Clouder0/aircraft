@@ -1,4 +1,6 @@
-package edu.hitsz.aircraft;
+package edu.hitsz.aircraft.enemy.factory;
+
+import edu.hitsz.aircraft.enemy.EnemyBase;
 
 public class ChanceEnemyFactory implements EnemyFactoryInterface {
     private final double chance;
