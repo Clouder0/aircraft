@@ -171,4 +171,45 @@ EnemyLoot <|.. ChanceLootTable
 
 ChanceLootTable o--> ItemFactoryInterface
 
+EnemyBulletFactory --> EnemyBullet
+HeroBulletFactory --> HeroBullet
+
+interface BulletFactoryInterface {
+  + BaseBullet genBullet(int locationX, int locationY, int speedX, int speedY)
+}
+
+EnemyBulletFactory ..|> BulletFactoryInterface
+HeroBulletFactory ..|> BulletFactoryInterface
+
+class EnemyBulletFactory {
+  + EnemyBullet genBullet(int locationX, int locationY, int speedX, int speedY)
+}
+
+class HeroBulletFactory {
+  + EnemyBullet genBullet(int locationX, int locationY, int speedX, int speedY)
+}
+
+interface ShootStrategyInterface {
+  + List<BaseBullet> shoot(int locationX, int locationY, int speedX, int speedY)
+}
+
+class SingleShootStrategy {
+  + SingleShootStrategy(BulletFactoryInterface bullet)
+  + List<BaseBullet> shoot(int locationX, int locationY, int speedX, int speedY)
+}
+class SectorShootStrategy {
+  + SingleShootStrategy(BulletFactoryInterface bullet)
+  + List<BaseBullet> shoot(int locationX, int locationY, int speedX, int speedY)
+}
+class HalfCircleShootStrategy {
+  + SingleShootStrategy(BulletFactoryInterface bullet)
+  + List<BaseBullet> shoot(int locationX, int locationY, int speedX, int speedY)
+}
+
+SingleShootStrategy ..|> ShootStrategyInterface
+SectorShootStrategy ..|> ShootStrategyInterface
+HalfCircleShootStrategy ..|> ShootStrategyInterface
+BulletFactoryInterface <--o SingleShootStrategy
+BulletFactoryInterface <--o SectorShootStrategy
+BulletFactoryInterface <--o HalfCircleShootStrategy
 @enduml

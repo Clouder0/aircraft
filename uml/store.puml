@@ -1,0 +1,23 @@
+@startuml
+interface ScoreStoreInterface {
+  + List<ScoreRecord> getScores()
+  + void writeScore(ScoreRecord)
+}
+
+class FileScoreStore {
+  + List<ScoreRecord> getScores()
+  + void writeScore(ScoreRecord)
+}
+
+FileScoreStore ..|> ScoreStoreInterface
+
+class ScoreManager {
+  + List<ScoreRecord> getScores()
+  + void writeScore(ScoreRecord)
+  + void addStore(ScoreStoreInterface)
+  - List<ScoreStoreInterface> stores
+}
+
+ScoreStoreInterface o--> ScoreManager
+
+@enduml
