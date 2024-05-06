@@ -63,28 +63,28 @@ public class Game extends JPanel {
      */
     private int time = 0;
 
-    /**
-     * 周期（ms)
-     * 指示子弹的发射、敌机的产生频率
-     */
-    private int cycleDuration = 600;
     private int cycleTime = 0;
 
+    private final int difficulty;
+
+    private MusicHelper BGM;
     /**
      * 游戏结束标志
      */
     private boolean gameOverFlag = false;
-    private final ScoreManager scoreManager;
 
-    public Game() {
+    // 0 for easy, 1 for medium, 2 for hard
+    public Game(int difficulty, boolean music) {
+        MusicManager.enabled = music;
+        System.out.println(music);
+        this.difficulty = difficulty;
         heroAircraft = HeroSingleton.getInstance();
 
         enemyAircrafts = new LinkedList<>();
         heroBullets = new LinkedList<>();
         enemyBullets = new LinkedList<>();
         items = new ArrayList<>();
-        scoreManager = new ScoreManager();
-        scoreManager.addStore(new FileScoreStore(Path.of("score.txt")));
+        ScoreManager.addStore(new FileScoreStore(Path.of("score.txt")));
 
         enemyFactories = new ArrayList<>();
         enemyFactories.add(new ChanceEnemyFactory(0.8, (new RandomLocationEnemyFactory<>(new CommonEnemyLocationFactory()))));
@@ -102,7 +102,6 @@ public class Game extends JPanel {
 
         //启动英雄机鼠标监听
         new HeroController(this, heroAircraft);
-
     }
 
     /**
@@ -161,7 +160,7 @@ public class Game extends JPanel {
          * 本次任务执行完成后，需要延迟设定的延迟时间，才会执行新的任务
          */
         executorService.scheduleWithFixedDelay(task, timeInterval, timeInterval, TimeUnit.MILLISECONDS);
-
+        this.BGM = MusicManager.playLoop("src/videos/bgm.wav");
     }
 
     //***********************
@@ -170,6 +169,11 @@ public class Game extends JPanel {
 
     private boolean timeCountAndNewCycleJudge() {
         cycleTime += timeInterval;
+        /**
+         * 周期（ms)
+         * 指示子弹的发射、敌机的产生频率
+         */
+        int cycleDuration = 600;
         if (cycleTime >= cycleDuration && cycleTime - timeInterval < cycleTime) {
             // 跨越到新的周期
             cycleTime %= cycleDuration;
@@ -301,8 +305,16 @@ public class Game extends JPanel {
         super.paint(g);
 
         // 绘制背景,图片滚动
-        g.drawImage(ImageManager.BACKGROUND_IMAGE, 0, this.backGroundTop - Main.WINDOW_HEIGHT, null);
-        g.drawImage(ImageManager.BACKGROUND_IMAGE, 0, this.backGroundTop, null);
+        if(this.difficulty == 0) {
+            g.drawImage(ImageManager.BACKGROUND_IMAGE, 0, this.backGroundTop - Main.WINDOW_HEIGHT, null);
+            g.drawImage(ImageManager.BACKGROUND_IMAGE, 0, this.backGroundTop, null);
+        } else if(this.difficulty == 1) {
+            g.drawImage(ImageManager.BACKGROUND_IMAGE2, 0, this.backGroundTop - Main.WINDOW_HEIGHT, null);
+            g.drawImage(ImageManager.BACKGROUND_IMAGE2, 0, this.backGroundTop, null);
+        } else {
+            g.drawImage(ImageManager.BACKGROUND_IMAGE3, 0, this.backGroundTop - Main.WINDOW_HEIGHT, null);
+            g.drawImage(ImageManager.BACKGROUND_IMAGE3, 0, this.backGroundTop, null);
+        }
         this.backGroundTop += 1;
         if (this.backGroundTop == Main.WINDOW_HEIGHT) {
             this.backGroundTop = 0;
@@ -343,13 +355,26 @@ public class Game extends JPanel {
         g.drawString("SCORE:" + this.score.get(), x, y);
         y = y + 20;
         g.drawString("LIFE:" + this.heroAircraft.getHp(), x, y);
+        y = y + 20;
+        g.drawString("Difficulty:" + this.difficulty, x, y);
     }
 
     private void gameOver() {
         System.out.println("game over logic");
-        ScoreRecord now = new ScoreRecord("tester", LocalDateTime.now(), this.score.get());
-        this.scoreManager.writeScore(now);
-        String s = this.scoreManager.getScores().stream().map((x) -> x.name + " " + x.score + " " + x.time).reduce("", (pre, x) -> pre + x + '\n');
-        System.out.println(s);
+        if(this.BGM != null)  this.BGM.stop();
+        this.BGM = null;
+        MusicManager.stopall();
+        MusicManager.play("src/videos/game_over.wav");
+        NameDialog dialog = new NameDialog((String name) -> {
+            ScoreRecord now = new ScoreRecord(name, LocalDateTime.now(), this.score.get());
+            ScoreManager.writeScore(now);
+            ScoreForm form = new ScoreForm();
+            form.getPanel().setVisible(true);
+            Main.cardPanel.add(form.getPanel());
+            Main.cardLayout.last(Main.cardPanel);
+            return true;
+        });
+        Main.cardPanel.add(dialog.getContentPane());
+        Main.cardLayout.last(Main.cardPanel);
     }
 }

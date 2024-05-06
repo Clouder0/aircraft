@@ -3,6 +3,7 @@ package edu.hitsz.aircraft.enemy;
 import edu.hitsz.aircraft.shootstrategy.HalfCircleShootStrategy;
 import edu.hitsz.aircraft.shootstrategy.SectorShootStrategy;
 import edu.hitsz.application.Main;
+import edu.hitsz.application.MusicManager;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.bullet.EnemyBullet;
 import edu.hitsz.bullet.EnemyBulletFactory;
@@ -22,7 +23,12 @@ public class BossEnemy extends EnemyBase {
         loots.add(new ChanceItemFactory(0.9, new BulletItemFactory()));
         loots.add(new ChanceItemFactory(0.9, new BombItemFactory()));
         loots.add(new ChanceItemFactory(0.9, new BulletPlusItemFactory()));
-        this.genLoot = new ChanceMultipleLootTable(loots, 3);
+        var helper = MusicManager.playLoop("src/videos/bgm_boss.wav");
+        this.genLoot = (EnemyBase e) -> {
+            var t = new ChanceMultipleLootTable(loots, 3);
+            helper.stop();
+            return t.genLoot(e);
+        };
     }
 
     private void changeDirection() {

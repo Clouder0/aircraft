@@ -2,6 +2,7 @@ package edu.hitsz.item;
 
 import edu.hitsz.aircraft.HeroAircraft;
 import edu.hitsz.aircraft.shootstrategy.SectorShootStrategy;
+import edu.hitsz.application.MusicManager;
 import edu.hitsz.application.TimerManager;
 import edu.hitsz.bullet.HeroBulletFactory;
 
@@ -13,5 +14,6 @@ public class BulletItem extends ItemBase {
     public void use(HeroAircraft hero) {
         System.out.println("Bullet used.");
         hero.enhanceShoot(100, new SectorShootStrategy(new HeroBulletFactory(), -1));
+        MusicManager.play("src/videos/get_supply.wav");
     }
 }

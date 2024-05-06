@@ -40,4 +40,12 @@ public class FileScoreStore implements ScoreStoreInterface {
             throw new RuntimeException(e);
         }
     }
+
+    public void clear() {
+        try {
+            Files.write(this.filepath, "".getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -2,6 +2,7 @@ package edu.hitsz.item;
 
 import edu.hitsz.aircraft.HeroAircraft;
 import edu.hitsz.aircraft.HeroSingleton;
+import edu.hitsz.application.MusicManager;
 import edu.hitsz.item.ItemBase;
 
 public class HealItem extends ItemBase {
@@ -14,5 +15,6 @@ public class HealItem extends ItemBase {
 
     public void use(HeroAircraft hero) {
         hero.increaseHp(this.healAmount);
+        MusicManager.play("src/videos/get_supply.wav");
     }
 }

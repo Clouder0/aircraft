@@ -1,6 +1,7 @@
 package edu.hitsz.aircraft.shootstrategy;
 
 import edu.hitsz.aircraft.AbstractAircraft;
+import edu.hitsz.application.MusicManager;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.bullet.BulletFactoryInterface;
 import edu.hitsz.bullet.EnemyBullet;
@@ -26,6 +27,7 @@ public class HalfCircleShootStrategy implements ShootStrategyInterface {
             int bullet_x = (int) (aircraft.getLocationX() + Math.cos(d) * radius * direction);
             int bullet_y = (int) (aircraft.getLocationY() + Math.sin(d) * radius * direction);
             res.add(bullet.genBullet(bullet_x, bullet_y, (int) (Math.cos(d) * 5) * direction, aircraft.getSpeedY() + (10 + (int) (Math.sin(d) * 5)) * direction));
+            MusicManager.play("src/videos/bullet.wav");
         }
         return res;
     }

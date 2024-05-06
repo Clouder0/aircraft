@@ -6,4 +6,5 @@ public interface ScoreStoreInterface {
     List<ScoreRecord> getScores();
 
     void writeScore(ScoreRecord record);
+    void clear();
 }

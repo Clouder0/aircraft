@@ -36,6 +36,8 @@ public class ImageManager {
     public static final Map<String, BufferedImage> CLASSNAME_IMAGE_MAP = new HashMap<>();
 
     public static BufferedImage BACKGROUND_IMAGE;
+    public static BufferedImage BACKGROUND_IMAGE2;
+    public static BufferedImage BACKGROUND_IMAGE3;
     public static BufferedImage HERO_IMAGE;
     public static BufferedImage MOB_ENEMY_IMAGE;
 
@@ -47,6 +49,8 @@ public class ImageManager {
         try {
 
             BACKGROUND_IMAGE = ImageIO.read(new FileInputStream("src/images/bg.jpg"));
+            BACKGROUND_IMAGE2 = ImageIO.read(new FileInputStream("src/images/bg2.jpg"));
+            BACKGROUND_IMAGE3 = ImageIO.read(new FileInputStream("src/images/bg3.jpg"));
 
             load(HeroAircraft.class, "hero.png");
             load(CommonEnemy.class, "mob.png");
