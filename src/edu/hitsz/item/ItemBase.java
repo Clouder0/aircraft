@@ -1,6 +1,6 @@
 package edu.hitsz.item;
 
-import edu.hitsz.aircraft.HeroAircraft;
+import edu.hitsz.application.GameBase;
 import edu.hitsz.application.Main;
 import edu.hitsz.basic.AbstractFlyingObject;
 
@@ -32,6 +32,6 @@ public abstract class ItemBase extends AbstractFlyingObject {
     /**
      * 生效
      */
-    public abstract void use(HeroAircraft hero);
+    public abstract void use(GameBase gameBase);
 
 }

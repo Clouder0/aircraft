@@ -24,7 +24,7 @@ public class HeroAircraft extends AbstractAircraft {
      * @param speedY    英雄机射出的子弹的基准速度（英雄机无特定速度）
      */
     public HeroAircraft(int locationX, int locationY, int speedX, int speedY) {
-        super(locationX, locationY, speedX, speedY, 200, new SingleShootStrategy(new HeroBulletFactory(), -1));
+        super(locationX, locationY, speedX, speedY, 400, new SingleShootStrategy(new HeroBulletFactory(), -1));
         this.shoot_queue = new ArrayList<>();
         // add default shoot
         ShootStrategyInterface default_shoot = this.shoot_strategy;

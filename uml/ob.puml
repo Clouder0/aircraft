@@ -1,0 +1,36 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+
+interface BombObserver {
+  + void onExplode()
+}
+class BombItem {
+  - static void registerObserver(BombObserver bo)
+  - static List<BombObserver> observers
+  + use()
+}
+
+BombObserver <.. BombItem
+
+class EliteEnemy{
+  + void onExplode()
+}
+class CommonEnemy{
+  + void onExplode()
+}
+class ElitePlusEnemy{
+  + void onExplode()
+}
+class EnemyBullet {
+  + void onExplode()
+}
+BombObserver <|-- EliteEnemy
+BombObserver <|-- CommonEnemy
+BombObserver <|-- ElitePlusEnemy
+BombObserver <|-- EnemyBullet
+
+
+
+@enduml

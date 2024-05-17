@@ -12,12 +12,12 @@ import java.awt.event.MouseEvent;
  * @author hitsz
  */
 public class HeroController {
-    private Game game;
+    private GameBase gameBase;
     private HeroAircraft heroAircraft;
     private MouseAdapter mouseAdapter;
 
-    public HeroController(Game game, HeroAircraft heroAircraft){
-        this.game = game;
+    public HeroController(GameBase gameBase, HeroAircraft heroAircraft){
+        this.gameBase = gameBase;
         this.heroAircraft = heroAircraft;
 
         mouseAdapter = new MouseAdapter() {
@@ -34,8 +34,8 @@ public class HeroController {
             }
         };
 
-        game.addMouseListener(mouseAdapter);
-        game.addMouseMotionListener(mouseAdapter);
+        gameBase.addMouseListener(mouseAdapter);
+        gameBase.addMouseMotionListener(mouseAdapter);
     }
 
 

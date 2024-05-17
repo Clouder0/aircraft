@@ -10,7 +10,7 @@ import edu.hitsz.item.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EliteEnemy extends EnemyBase {
+public class EliteEnemy extends EnemyBase implements BombObserverInterface{
     public EliteEnemy(int locationX, int locationY, int speedX, int speedY) {
         super(locationX, locationY, speedX, speedY, 60, new SingleShootStrategy(new EnemyBulletFactory(), 1));
         List<ItemFactoryInterface> loots = new ArrayList<ItemFactoryInterface>();
@@ -27,5 +27,9 @@ public class EliteEnemy extends EnemyBase {
         if (locationY >= Main.WINDOW_HEIGHT) {
             this.vanish();
         }
+    }
+
+    public void onExplode() {
+        decreaseHp(1000);
     }
 }

@@ -1,9 +1,8 @@
 package edu.hitsz.item;
 
-import edu.hitsz.aircraft.HeroAircraft;
 import edu.hitsz.aircraft.shootstrategy.SectorShootStrategy;
+import edu.hitsz.application.GameBase;
 import edu.hitsz.application.MusicManager;
-import edu.hitsz.application.TimerManager;
 import edu.hitsz.bullet.HeroBulletFactory;
 
 public class BulletItem extends ItemBase {
@@ -11,9 +10,9 @@ public class BulletItem extends ItemBase {
         super(locationX, locationY, speedX, speedY);
     }
 
-    public void use(HeroAircraft hero) {
+    public void use(GameBase gameBase) {
         System.out.println("Bullet used.");
-        hero.enhanceShoot(100, new SectorShootStrategy(new HeroBulletFactory(), -1));
+        gameBase.getHeroAircraft().enhanceShoot(100, new SectorShootStrategy(new HeroBulletFactory(), -1));
         MusicManager.play("src/videos/get_supply.wav");
     }
 }

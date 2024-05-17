@@ -2,6 +2,7 @@ package edu.hitsz.aircraft.enemy;
 
 import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;
+import edu.hitsz.item.BombObserverInterface;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
  *
  * @author hitsz
  */
-public class CommonEnemy extends EnemyBase {
+public class CommonEnemy extends EnemyBase implements BombObserverInterface {
 
     public CommonEnemy(int locationX, int locationY, int speedX, int speedY) {
         super(locationX, locationY, speedX, speedY, 30, null);
@@ -25,6 +26,9 @@ public class CommonEnemy extends EnemyBase {
         if (locationY >= Main.WINDOW_HEIGHT) {
             vanish();
         }
+    }
+    public void onExplode() {
+        decreaseHp(1000);
     }
 }
 

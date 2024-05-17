@@ -1,20 +1,20 @@
 package edu.hitsz.aircraft;
 
 import edu.hitsz.aircraft.enemy.BossEnemy;
-import edu.hitsz.aircraft.enemy.factory.BossFactory;
+import edu.hitsz.aircraft.enemy.factory.HardBossFactory;
 import edu.hitsz.basic.Wrapper;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class BossFactoryTest {
+class HardBossFactoryTest {
 
 
     @Test
     void genEnemy() {
         Wrapper<Integer> scoreRef = new Wrapper<>(0);
         // test threshold
-        BossFactory bf = new BossFactory(scoreRef);
+        HardBossFactory bf = new HardBossFactory(scoreRef);
         // score < 100, return null
         assertNull(bf.genEnemy());
         scoreRef.set(110);

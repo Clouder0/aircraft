@@ -26,9 +26,9 @@ import java.util.concurrent.*;
  *
  * @author hitsz
  */
-public class Game extends JPanel {
+public abstract class GameBase extends JPanel {
 
-    private int backGroundTop = 0;
+    protected int backGroundTop = 0;
 
     /**
      * Scheduled 线程池，用于任务调度
@@ -39,25 +39,21 @@ public class Game extends JPanel {
      * 时间间隔(ms)，控制刷新频率
      */
     private int timeInterval = 40;
+    protected int timeCount = 0;
 
     private final HeroAircraft heroAircraft;
-    private final List<EnemyBase> enemyAircrafts;
+    protected final List<EnemyBase> enemyAircrafts;
     private final List<BaseBullet> heroBullets;
     private final List<BaseBullet> enemyBullets;
 
     private final List<ItemBase> items;
 
-    private final List<EnemyFactoryInterface> enemyFactories;
-
-    /**
-     * 屏幕中出现的敌机最大数量
-     */
-    private int enemyMaxNumber = 5;
+    protected final List<EnemyFactoryInterface> enemyFactories;
 
     /**
      * 当前得分
      */
-    private Wrapper<Integer> score = new Wrapper<>(0);
+    protected Wrapper<Integer> score = new Wrapper<>(0);
     /**
      * 当前时刻
      */
@@ -65,7 +61,6 @@ public class Game extends JPanel {
 
     private int cycleTime = 0;
 
-    private final int difficulty;
 
     private MusicHelper BGM;
     /**
@@ -73,11 +68,16 @@ public class Game extends JPanel {
      */
     private boolean gameOverFlag = false;
 
+
+    public HeroAircraft getHeroAircraft() {return heroAircraft;}
+
+    protected abstract BossFactoryBase getBossFactory();
+
+    protected abstract void registerEnemyFactories();
     // 0 for easy, 1 for medium, 2 for hard
-    public Game(int difficulty, boolean music) {
+    public GameBase(boolean music) {
         MusicManager.enabled = music;
         System.out.println(music);
-        this.difficulty = difficulty;
         heroAircraft = HeroSingleton.getInstance();
 
         enemyAircrafts = new LinkedList<>();
@@ -87,10 +87,8 @@ public class Game extends JPanel {
         ScoreManager.addStore(new FileScoreStore(Path.of("score.txt")));
 
         enemyFactories = new ArrayList<>();
-        enemyFactories.add(new ChanceEnemyFactory(0.8, (new RandomLocationEnemyFactory<>(new CommonEnemyLocationFactory()))));
-        enemyFactories.add(new ChanceEnemyFactory(0.4, (new RandomLocationEnemyFactory<>(new EliteEnemyLocationFactory()))));
-        enemyFactories.add(new ChanceEnemyFactory(0.2, (new RandomLocationEnemyFactory<>(new ElitePlusEnemyLocationFactory()))));
-        enemyFactories.add(new BossFactory(this.score));
+        registerEnemyFactories();
+
 
 
         /**
@@ -104,6 +102,9 @@ public class Game extends JPanel {
         new HeroController(this, heroAircraft);
     }
 
+
+    protected abstract boolean checkNewEnemy();
+    protected abstract void incrementDifficulty();
     /**
      * 游戏启动入口，执行游戏逻辑
      */
@@ -118,10 +119,13 @@ public class Game extends JPanel {
             // 周期性执行（控制频率）
             if (timeCountAndNewCycleJudge()) {
                 System.out.println(time);
+                timeCount++;
+                incrementDifficulty();
                 for (EnemyFactoryInterface factory : this.enemyFactories) {
-                    if (enemyAircrafts.size() >= enemyMaxNumber) break;
+                    if(!checkNewEnemy()) break;
                     EnemyBase enemy = factory.genEnemy();
-                    if (enemy != null) this.enemyAircrafts.add(enemy);
+                    if(enemy == null) continue;
+                    this.enemyAircrafts.add(enemy);
                 }
                 // 飞机射出子弹
                 shootAction();
@@ -248,13 +252,7 @@ public class Game extends JPanel {
                     // 敌机损失一定生命值
                     enemyAircraft.decreaseHp(bullet.getPower());
                     bullet.vanish();
-                    if (enemyAircraft.notValid()) {
-                        List<ItemBase> loot = enemyAircraft.genLoot();
-                        if (loot != null) {
-                            items.addAll(loot);
-                        }
-                        score.set(score.get() + 10);
-                    }
+
                 }
                 // 英雄机 与 敌机 相撞，均损毁
                 // 不，英雄机扣 HP 100
@@ -264,14 +262,25 @@ public class Game extends JPanel {
                     heroAircraft.decreaseHp(100);
                 }
             }
+
         }
 
         for (ItemBase item : items) {
             if (!item.crash(heroAircraft)) {
                 continue;
             }
-            item.use(heroAircraft);
+            item.use(this);
             item.vanish();
+        }
+
+        for(EnemyBase enemyAircraft : enemyAircrafts) {
+            if (enemyAircraft.notValid()) {
+                List<ItemBase> loot = enemyAircraft.genLoot();
+                if (loot != null) {
+                    items.addAll(loot);
+                }
+                score.set(score.get() + 10);
+            }
         }
     }
 
@@ -294,6 +303,8 @@ public class Game extends JPanel {
     //      Paint 各部分
     //***********************
 
+
+    protected abstract void drawBackground(Graphics g);
     /**
      * 重写paint方法
      * 通过重复调用paint方法，实现游戏动画
@@ -304,17 +315,8 @@ public class Game extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
 
+        this.drawBackground(g);
         // 绘制背景,图片滚动
-        if(this.difficulty == 0) {
-            g.drawImage(ImageManager.BACKGROUND_IMAGE, 0, this.backGroundTop - Main.WINDOW_HEIGHT, null);
-            g.drawImage(ImageManager.BACKGROUND_IMAGE, 0, this.backGroundTop, null);
-        } else if(this.difficulty == 1) {
-            g.drawImage(ImageManager.BACKGROUND_IMAGE2, 0, this.backGroundTop - Main.WINDOW_HEIGHT, null);
-            g.drawImage(ImageManager.BACKGROUND_IMAGE2, 0, this.backGroundTop, null);
-        } else {
-            g.drawImage(ImageManager.BACKGROUND_IMAGE3, 0, this.backGroundTop - Main.WINDOW_HEIGHT, null);
-            g.drawImage(ImageManager.BACKGROUND_IMAGE3, 0, this.backGroundTop, null);
-        }
         this.backGroundTop += 1;
         if (this.backGroundTop == Main.WINDOW_HEIGHT) {
             this.backGroundTop = 0;
@@ -347,6 +349,7 @@ public class Game extends JPanel {
         }
     }
 
+    protected abstract int getDifficulty();
     private void paintScoreAndLife(Graphics g) {
         int x = 10;
         int y = 25;
@@ -356,7 +359,7 @@ public class Game extends JPanel {
         y = y + 20;
         g.drawString("LIFE:" + this.heroAircraft.getHp(), x, y);
         y = y + 20;
-        g.drawString("Difficulty:" + this.difficulty, x, y);
+        g.drawString("Difficulty:" + this.getDifficulty(), x, y);
     }
 
     private void gameOver() {

@@ -10,7 +10,7 @@ import edu.hitsz.item.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ElitePlusEnemy extends EnemyBase {
+public class ElitePlusEnemy extends EnemyBase implements BombObserverInterface{
 
     private int direction_duration = 0;
     public ElitePlusEnemy(int locationX, int locationY, int speedX, int speedY) {
@@ -45,5 +45,8 @@ public class ElitePlusEnemy extends EnemyBase {
     public List<BaseBullet> shoot() {
         if(Math.random() < 0.3) return null;
         return super.shoot();
+    }
+    public void onExplode() {
+        decreaseHp(60);
     }
 }

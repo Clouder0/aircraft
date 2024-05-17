@@ -1,0 +1,50 @@
+@startuml
+
+abstract class GameBase {
+  # abstract BossFactoryBase getBossFactory()
+  # abstract void drawBackground()
+  # abstract void registerEnemyFactories()
+  # abstract void getDifficultyText()
+}
+class EasyGame {
+  # BossFactoryBase getBossFactory()
+  # void drawBackground()
+  # void registerEnemyFactories()
+  # void getDifficultyText()
+}
+class MediumGame {
+  # BossFactoryBase getBossFactory()
+  # void drawBackground()
+  # void registerEnemyFactories()
+  # void getDifficultyText()
+}
+class HardGame{
+  # BossFactoryBase getBossFactory()
+  # void drawBackground()
+  # void registerEnemyFactories()
+  # void getDifficultyText()
+}
+GameBase <|-- EasyGame
+GameBase <|-- MediumGame
+GameBase <|-- HardGame
+
+EasyBossFactory <.. MediumGame
+HardBossFactory <.. HardGame
+
+abstract class BossFactoryBase {
+  # abstract int nextHp()
+  # abstract boolean checkGenerate()
+}
+class EasyBossFactory{
+  # int nextHp()
+  # boolean checkGenerate()
+}
+class HardBossFactory{
+  # int nextHp()
+  # boolean checkGenerate()
+}
+
+BossFactoryBase <|-- EasyBossFactory
+BossFactoryBase <|-- HardBossFactory
+
+@enduml

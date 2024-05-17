@@ -12,12 +12,16 @@ import edu.hitsz.item.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BossEnemy extends EnemyBase {
+public class BossEnemy extends EnemyBase implements BombObserverInterface {
 
     private int direction_duration = 0;
 
-    public BossEnemy(int locationX, int locationY) {
-        super(locationX, locationY, 4, 0, 300, new HalfCircleShootStrategy(new EnemyBulletFactory(), 1));
+    public void onExplode() {
+        
+    }
+
+    public BossEnemy(int hp, int locationX, int locationY) {
+        super(locationX, locationY, 4, 0, hp, new HalfCircleShootStrategy(new EnemyBulletFactory(), 1));
         List<ItemFactoryInterface> loots = new ArrayList<>();
         loots.add(new ChanceItemFactory(0.9, new HealItemFactory(10)));
         loots.add(new ChanceItemFactory(0.9, new BulletItemFactory()));
@@ -26,6 +30,7 @@ public class BossEnemy extends EnemyBase {
         var helper = MusicManager.playLoop("src/videos/bgm_boss.wav");
         this.genLoot = (EnemyBase e) -> {
             var t = new ChanceMultipleLootTable(loots, 3);
+            assert helper != null;
             helper.stop();
             return t.genLoot(e);
         };

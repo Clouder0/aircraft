@@ -16,30 +16,30 @@ public class Menu {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                Game game = new Game(0, musicCheckBox.isSelected());
-                Main.cardPanel.add(game);
+                GameBase gameBase = new EasyGame(musicCheckBox.isSelected());
+                Main.cardPanel.add(gameBase);
                 Main.cardLayout.last(Main.cardPanel);
-                game.action();
+                gameBase.action();
             }
         });
         mediumButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                Game game = new Game(1, musicCheckBox.isSelected());
-                Main.cardPanel.add(game);
+                GameBase gameBase = new MediumGame(musicCheckBox.isSelected());
+                Main.cardPanel.add(gameBase);
                 Main.cardLayout.last(Main.cardPanel);
-                game.action();
+                gameBase.action();
             }
         });
         hardButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                Game game = new Game(2,musicCheckBox.isSelected());
-                Main.cardPanel.add(game);
+                GameBase gameBase = new HardGame(musicCheckBox.isSelected());
+                Main.cardPanel.add(gameBase);
                 Main.cardLayout.last(Main.cardPanel);
-                game.action();
+                gameBase.action();
             }
         });
     }

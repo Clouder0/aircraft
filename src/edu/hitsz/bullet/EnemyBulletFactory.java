@@ -1,7 +1,11 @@
 package edu.hitsz.bullet;
 
-public class EnemyBulletFactory implements  BulletFactoryInterface {
+import edu.hitsz.item.BombItem;
+
+public class EnemyBulletFactory implements BulletFactoryInterface {
     public BaseBullet genBullet(int locationX, int locationY, int speedX, int speedY) {
-        return new EnemyBullet(locationX,locationY,speedX,speedY, 20);
+        var ret = new EnemyBullet(locationX, locationY, speedX, speedY, 20);
+        BombItem.registerObserver(ret);
+        return ret;
     }
 }
